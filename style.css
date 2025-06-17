@@ -191,6 +191,37 @@ li {
   position: relative;
   border-left: 6px solid #3498db; /* default confirm */
 }
+
+/* Styles selon le type de popup via la classe sur #popup */
+#popup.confirm {
+  border-left-color: #3498db;
+}
+#popup.confirm #popupMessage {
+  color: #2c3e50;
+  font-weight: 600;
+}
+#popup.confirm #popupConfirmBtn {
+  background-color: #3498db;
+}
+#popup.confirm #popupConfirmBtn:hover {
+  background-color: #2980b9;
+}
+
+#popup.error {
+  border-left-color: #e74c3c;
+}
+#popup.error #popupMessage {
+  color: #c0392b;
+  font-weight: 700;
+}
+#popup.error #popupConfirmBtn {
+  background-color: #e74c3c;
+}
+#popup.error #popupConfirmBtn:hover {
+  background-color: #c0392b;
+}
+
+/* Message popup */
 #popupMessage {
   margin-bottom: 25px;
   font-size: 1.1rem;
@@ -199,39 +230,13 @@ li {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-weight: 600;
-}
-#popupMessage .icon {
-  font-size: 1.5rem;
 }
 
-/* Confirmation style */
-#popup.confirm {
-  border-left-color: #3498db;
-}
-#popupMessage.confirm {
-  color: #2c3e50;
-}
-#popupConfirmBtn.confirm {
-  background-color: #3498db;
-}
-#popupConfirmBtn.confirm:hover {
-  background-color: #2980b9;
-}
-
-/* Erreur style */
-#popup.error {
-  border-left-color: #e74c3c;
-}
-#popupMessage.error {
-  color: #c0392b;
-  font-weight: 700;
-}
-#popupConfirmBtn.error {
-  background-color: #e74c3c;
-}
-#popupConfirmBtn.error:hover {
-  background-color: #c0392b;
+/* Icon dans le message popup */
+#popupIcon {
+  font-size: 2rem;
+  user-select: none;
+  margin-bottom: 12px;
 }
 
 /* Boutons popup commun */
@@ -253,3 +258,4 @@ li {
 #popupCancelBtn:hover {
   background-color: #636e72;
 }
+
