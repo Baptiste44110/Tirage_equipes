@@ -3,180 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tirage d'équipes</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f4f8;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 30px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-    }
-    h3 {
-      color: #34495e;
-      margin-top: 35px;
-      margin-bottom: 8px;
-      border-bottom: 2px solid #3498db;
-      padding-bottom: 4px;
-      font-weight: 600;
-    }
-    em {
-      color: #666;
-      font-style: italic;
-      font-size: 0.9em;
-      display: block;
-      margin-bottom: 12px;
-      line-height: 1.3;
-    }
-    input[type="text"],
-    input[type="number"],
-    select {
-      width: 100%;
-      max-width: 280px;
-      padding: 8px 12px;
-      border: 1.5px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-      margin-bottom: 12px;
-    }
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    select:focus {
-      border-color: #3498db;
-      outline: none;
-      box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
-    }
-    label {
-      display: inline-flex;
-      align-items: center;
-      font-weight: 500;
-      margin-bottom: 10px;
-      color: #2c3e50;
-      cursor: pointer;
-    }
-    label input[type="checkbox"] {
-      margin-right: 8px;
-      cursor: pointer;
-      width: 18px;
-      height: 18px;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      font-size: 1rem;
-      margin-top: 6px;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    #resetBtn {
-      background-color: #e74c3c;
-      margin-top: 30px;
-      width: 100%;
-      font-size: 1.1rem;
-    }
-    #resetBtn:hover {
-      background-color: #c0392b;
-    }
-    ul {
-      list-style-type: disc;
-      padding-left: 25px;
-      margin-top: 8px;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-    li {
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
-    .remove {
-      color: #e74c3c;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1.1rem;
-      user-select: none;
-      margin-left: 8px;
-      transition: color 0.3s;
-    }
-    .remove:hover {
-      color: #c0392b;
-    }
-    .team {
-      background: white;
-      border-radius: 8px;
-      padding: 15px 20px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-      color: #34495e;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-    #result {
-      margin-top: 20px;
-    }
-    #incompatibilityContainer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-    #incompatibilityContainer select {
-      width: 140px;
-      padding: 6px 8px;
-      font-size: 0.95rem;
-      margin-bottom: 0;
-    }
-    #incompatibilityContainer button {
-      flex-shrink: 0;
-      padding: 8px 14px;
-      font-size: 0.95rem;
-      margin-bottom: 0;
-    }
-    @media (max-width: 480px) {
-      input[type="text"],
-      input[type="number"],
-      select,
-      button {
-        width: 100%;
-        max-width: 100%;
-      }
-      label {
-        font-size: 0.9rem;
-      }
-      .team {
-        font-size: 1rem;
-      }
-      #incompatibilityContainer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      #incompatibilityContainer select,
-      #incompatibilityContainer button {
-        width: 100%;
-        margin-bottom: 8px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Créateur d'équipes</h1>
@@ -214,12 +41,25 @@
 
   <div id="result"></div>
 
-  <button id="resetBtn" onclick="confirmReset()">Réinitialiser tout</button>
+  <button id="resetBtn" onclick="showResetPopup()">Réinitialiser tout</button>
+
+  <!-- Pop-up modal container -->
+  <div id="popupContainer" style="display:none; position: fixed; top:0; left:0; width:100vw; height:100vh; 
+      background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;">
+    <div id="popupContent" style="background:#fff; padding:20px; border-radius:8px; max-width:400px; width:90%; box-shadow:0 0 15px rgba(0,0,0,0.3);">
+      <p id="popupMessage" style="margin-bottom: 20px;"></p>
+      <div style="text-align:right;">
+        <button id="popupCancelBtn" style="margin-right: 10px;">Annuler</button>
+        <button id="popupConfirmBtn">Confirmer</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const participants = [];
     const incompatibilities = [];
 
+    // ---- Toggle gender input visibility ----
     function toggleGender() {
       const genderInput = document.getElementById('genderInput');
       const balanceGirlsLabel = document.getElementById('balanceGirlsLabel');
@@ -233,6 +73,7 @@
       }
     }
 
+    // ---- Update selectors for incompatibilities ----
     function updateParticipantSelectors() {
       const sel1 = document.getElementById('incompat1');
       const sel2 = document.getElementById('incompat2');
@@ -246,6 +87,7 @@
       });
     }
 
+    // ---- Update participant list display ----
     function updateParticipantsList() {
       const ul = document.getElementById('participantsList');
       ul.innerHTML = '';
@@ -262,6 +104,7 @@
       });
     }
 
+    // ---- Update incompatibilities list ----
     function updateIncompatList() {
       const ul = document.getElementById('incompatList');
       ul.innerHTML = '';
@@ -278,6 +121,7 @@
       });
     }
 
+    // ---- Add participant ----
     function addParticipant() {
       const input = document.getElementById('participantInput');
       const name = input.value.trim();
@@ -293,6 +137,7 @@
       input.value = '';
     }
 
+    // ---- Remove participant and related incompatibilities ----
     function removeParticipant(name) {
       const idx = participants.findIndex(p => p.name === name);
       if (idx !== -1) {
@@ -308,11 +153,12 @@
       }
     }
 
+    // ---- Add incompatibility ----
     function addIncompatibility() {
       const p1 = document.getElementById('incompat1').value;
       const p2 = document.getElementById('incompat2').value;
       if (p1 && p2 && p1 !== p2) {
-        if (!incompatibilities.some(([a, b]) => 
+        if (!incompatibilities.some(([a, b]) =>
             (a === p1 && b === p2) || (a === p2 && b === p1))) {
           incompatibilities.push([p1, p2]);
           updateIncompatList();
@@ -320,17 +166,19 @@
       }
     }
 
+    // ---- Remove incompatibility ----
     function removeIncompatibility(index) {
       incompatibilities.splice(index, 1);
       updateIncompatList();
     }
 
+    // ---- Generate teams with validation and pop-ups ----
     function generateTeams() {
       const numTeams = parseInt(document.getElementById('numTeams').value);
       const balanceGirls = document.getElementById('balanceGirls').checked;
 
       if (numTeams < 2 || participants.length < numTeams) {
-        alert("Pas assez de participants pour ce nombre d'équipes.");
+        showAlertPopup("Pas assez de participants pour ce nombre d'équipes.");
         return;
       }
 
@@ -364,7 +212,7 @@
 
         attempt++;
         if (attempt > 1000) {
-          alert("Impossible de former des équipes valides après 1000 essais.");
+          showAlertPopup("Impossible de former des équipes valides après 1000 essais.");
           return;
         }
 
@@ -373,12 +221,14 @@
       displayTeams(teams);
     }
 
+    // ---- Check team validity regarding incompatibilities ----
     function checkTeamsValid(teams) {
       return incompatibilities.every(([a, b]) => {
         return !teams.some(team => team.includes(a) && team.includes(b));
       });
     }
 
+    // ---- Display teams ----
     function displayTeams(teams) {
       const resDiv = document.getElementById('result');
       resDiv.innerHTML = '';
@@ -390,6 +240,7 @@
       });
     }
 
+    // ---- Reset all data ----
     function resetAll() {
       participants.length = 0;
       incompatibilities.length = 0;
@@ -405,10 +256,35 @@
       document.getElementById('result').innerHTML = '';
     }
 
-    function confirmReset() {
-      if (confirm("Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.")) {
+    // ---- Popup control ----
+    const popupContainer = document.getElementById('popupContainer');
+    const popupMessage = document.getElementById('popupMessage');
+    const popupConfirmBtn = document.getElementById('popupConfirmBtn');
+    const popupCancelBtn = document.getElementById('popupCancelBtn');
+
+    function showResetPopup() {
+      popupMessage.textContent = "Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.";
+      popupConfirmBtn.textContent = "Oui";
+      popupCancelBtn.textContent = "Annuler";
+      popupConfirmBtn.onclick = () => {
         resetAll();
-      }
+        closePopup();
+      };
+      popupCancelBtn.onclick = closePopup;
+      popupContainer.style.display = 'flex';
+    }
+
+    function showAlertPopup(message) {
+      popupMessage.textContent = message;
+      popupConfirmBtn.textContent = "OK";
+      popupCancelBtn.style.display = 'none';
+      popupConfirmBtn.onclick = closePopup;
+      popupContainer.style.display = 'flex';
+    }
+
+    function closePopup() {
+      popupContainer.style.display = 'none';
+      popupCancelBtn.style.display = 'inline-block';
     }
   </script>
 </body>
