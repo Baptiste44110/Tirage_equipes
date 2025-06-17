@@ -6,23 +6,36 @@
   <style>
     body {
       font-family: sans-serif;
-      margin: 20px;
+      margin: 20px auto;
       max-width: 800px;
     }
 
-    h2 {
-      margin-top: 30px;
+    h1, h2 {
+      text-align: center;
     }
 
     ul {
-      padding-left: 20px;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    input[type="text"], input[type="number"], select {
+      padding: 6px;
+      margin: 4px 2px;
     }
 
     button {
       padding: 6px 12px;
       border: none;
       border-radius: 4px;
-      font-weight: bold;
       cursor: pointer;
       margin: 4px 2px;
     }
@@ -34,7 +47,6 @@
       background: #e74c3c;
       color: #fff;
       font-size: 0.8em;
-      margin-left: 6px;
     }
 
     .modal-overlay {
@@ -66,6 +78,18 @@
       display: block;
       margin-bottom: 10px;
     }
+
+    #incompatibilitiesList li {
+      flex-wrap: wrap;
+    }
+
+    #teamsOutput {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
   </style>
 </head>
 <body>
@@ -86,8 +110,8 @@
   <ul id="participantsList"></ul>
 
   <h2>Incompatibilités</h2>
-  <select id="incomp1"></select>
-  <select id="incomp2"></select>
+  <select id="incomp1" style="max-width: 150px;"></select>
+  <select id="incomp2" style="max-width: 150px;"></select>
   <button onclick="addIncompatibility()">Ajouter</button>
   <ul id="incompatibilitiesList"></ul>
 
@@ -146,7 +170,7 @@
       ul.innerHTML = '';
       participants.forEach((p, i) => {
         const li = document.createElement('li');
-        li.textContent = p.name + (p.gender ? ` (${p.gender})` : '');
+        li.innerHTML = `${p.name}${p.gender ? ' (' + p.gender + ')' : ''}`;
         const btn = document.createElement('button');
         btn.textContent = 'Supprimer';
         btn.className = 'remove-btn';
@@ -188,7 +212,7 @@
       ul.innerHTML = '';
       incompatibilities.forEach((pair, i) => {
         const li = document.createElement('li');
-        li.textContent = `${pair[0]} ne doit pas être avec ${pair[1]}`;
+        li.innerHTML = `${pair[0]} ne doit pas être avec ${pair[1]}`;
         const btn = document.createElement('button');
         btn.textContent = 'Supprimer';
         btn.className = 'remove-btn';
