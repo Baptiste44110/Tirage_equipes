@@ -1,5 +1,3 @@
-/* ===== Style principal (ton CSS initial) ===== */
-
 * {
   box-sizing: border-box;
 }
@@ -173,66 +171,51 @@ li {
   }
 }
 
-/* ===== Style des pop-ups ===== */
-
-.popup-overlay {
+/* --- Popup styles --- */
+#popupContainer {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
   justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
-
-.popup {
+#popup {
   background: white;
+  padding: 25px 30px;
   border-radius: 8px;
-  padding: 20px 30px;
-  max-width: 350px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 400px;
   text-align: center;
-  color: #34495e;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
 }
-
-.popup h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-weight: 700;
-  font-size: 1.3rem;
+#popupMessage {
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+  color: #333;
 }
-
-.popup p {
-  margin-bottom: 20px;
-  font-size: 1rem;
-  line-height: 1.3;
-}
-
-.popup button {
-  background-color: #3498db;
-  border: none;
+#popupButtons button {
+  margin: 0 10px;
   padding: 10px 18px;
-  color: white;
-  border-radius: 6px;
+  border-radius: 5px;
+  border: none;
   font-weight: 600;
   cursor: pointer;
-  margin: 0 8px;
   font-size: 1rem;
+  min-width: 90px;
   transition: background-color 0.3s;
 }
-
-.popup button:hover {
+#popupConfirmBtn {
+  background-color: #3498db;
+  color: white;
+}
+#popupConfirmBtn:hover {
   background-color: #2980b9;
 }
-
-.popup .cancel-btn {
+#popupCancelBtn {
   background-color: #e74c3c;
+  color: white;
 }
-
-.popup .cancel-btn:hover {
+#popupCancelBtn:hover {
   background-color: #c0392b;
 }
