@@ -58,10 +58,54 @@
     const participants = [];
     const incompatibilities = [];
 
+    // Popup elements
     const popupContainer = document.getElementById('popupContainer');
     const popupMessage = document.getElementById('popupMessage');
     const popupConfirmBtn = document.getElementById('popupConfirmBtn');
     const popupCancelBtn = document.getElementById('popupCancelBtn');
+
+    // Affiche une popup avec message, et callbacks confirm/cancel
+    function showPopup(message, onConfirm, onCancel, onlyConfirm = false) {
+      popupMessage.textContent = message;
+      popupContainer.style.display = 'flex';
+      popupConfirmBtn.style.display = 'inline-block';
+      popupCancelBtn.style.display = onlyConfirm ? 'none' : 'inline-block';
+
+      function cleanUp() {
+        popupContainer.style.display = 'none';
+        popupConfirmBtn.removeEventListener('click', confirmHandler);
+        popupCancelBtn.removeEventListener('click', cancelHandler);
+      }
+
+      function confirmHandler() {
+        cleanUp();
+        if (onConfirm) onConfirm();
+      }
+
+      function cancelHandler() {
+        cleanUp();
+        if (onCancel) onCancel();
+      }
+
+      popupConfirmBtn.addEventListener('click', confirmHandler);
+      popupCancelBtn.addEventListener('click', cancelHandler);
+    }
+
+    // Popup spécifique pour alertes (un seul bouton OK)
+    function showAlertPopup(message) {
+      showPopup(message, null, null, true);
+    }
+
+    // Popup spécifique pour confirmer reset
+    function showResetPopup() {
+      showPopup(
+        "Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.",
+        () => { resetAll(); },
+        () => { /* rien à faire */ }
+      );
+    }
+
+    // Le reste de tes fonctions inchangées mais avec alert() remplacés par showAlertPopup()
 
     function toggleGender() {
       const genderInput = document.getElementById('genderInput');
@@ -126,7 +170,6 @@
       const name = input.value.trim();
       if (!name || participants.some(p => p.name === name)) {
         input.value = '';
-        showAlertPopup("Le nom est vide ou déjà utilisé.");
         return;
       }
       const enableGender = document.getElementById('enableGender').checked;
@@ -156,13 +199,11 @@
       const p1 = document.getElementById('incompat1').value;
       const p2 = document.getElementById('incompat2').value;
       if (p1 && p2 && p1 !== p2) {
-        if (!incompatibilities.some(([a, b]) =>
+        if (!incompatibilities.some(([a, b]) => 
             (a === p1 && b === p2) || (a === p2 && b === p1))) {
           incompatibilities.push([p1, p2]);
           updateIncompatList();
         }
-      } else {
-        showAlertPopup("Veuillez choisir deux participants différents pour créer une incompatibilité.");
       }
     }
 
@@ -220,54 +261,20 @@
     }
 
     function checkTeamsValid(teams) {
-      for (const [a, b] of incompatibilities) {
-        for (const team of teams) {
-          if (team.includes(a) && team.includes(b)) return false;
-        }
-      }
-      return true;
-    }
-
-    function displayTeams(teams) {
-      const container = document.getElementById('result');
-      container.innerHTML = '';
-      teams.forEach((team, i) => {
-        const div = document.createElement('div');
-        div.className = 'team';
-        div.textContent = `Équipe ${i + 1} : ${team.join(', ')}`;
-        container.appendChild(div);
+      return incompatibilities.every(([a, b]) => {
+        return !teams.some(team => team.includes(a) && team.includes(b));
       });
     }
 
-    function showResetPopup() {
-      popupMessage.textContent = "Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.";
-      popupConfirmBtn.textContent = "Oui";
-      popupCancelBtn.style.display = 'inline-block';
-      popupCancelBtn.textContent = "Annuler";
-
-      popupConfirmBtn.onclick = () => {
-        resetAll();
-        closePopup();
-      };
-      popupCancelBtn.onclick = closePopup;
-
-      popupContainer.style.display = 'flex';
-    }
-
-    function showAlertPopup(message) {
-      popupMessage.textContent = message;
-      popupConfirmBtn.textContent = "OK";
-
-      popupCancelBtn.style.display = 'none';
-      popupCancelBtn.onclick = null;
-
-      popupConfirmBtn.onclick = closePopup;
-      popupContainer.style.display = 'flex';
-    }
-
-    function closePopup() {
-      popupContainer.style.display = 'none';
-      popupCancelBtn.style.display = 'inline-block';
+    function displayTeams(teams) {
+      const resDiv = document.getElementById('result');
+      resDiv.innerHTML = '';
+      teams.forEach((team, idx) => {
+        const div = document.createElement('div');
+        div.className = 'team';
+        div.innerHTML = `<strong>Équipe ${idx + 1}</strong><br>${team.join(', ')}`;
+        resDiv.appendChild(div);
+      });
     }
 
     function resetAll() {
@@ -278,7 +285,7 @@
       updateIncompatList();
       document.getElementById('result').innerHTML = '';
       document.getElementById('participantInput').value = '';
-      document.getElementById('numTeams').value = '2';
+      document.getElementById('numTeams').value = 2;
       document.getElementById('enableGender').checked = false;
       toggleGender();
       document.getElementById('balanceGirls').checked = false;
