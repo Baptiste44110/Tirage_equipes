@@ -123,7 +123,7 @@
   <button onclick="askReset()">Réinitialiser</button>
   <div id="teamsOutput"></div>
 
-  <!-- Modale -->
+  <!-- Pop-up modale -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" id="modalBox">
       <span class="icon" id="modalIcon"></span>
@@ -160,7 +160,7 @@
     }
 
     function removeParticipant(index) {
-      participants.splice(index,1);
+      participants.splice(index, 1);
       updateParticipantsList();
       updateIncompatibilitySelectors();
     }
@@ -233,15 +233,15 @@
       let attempt = 0, teams;
 
       do {
-        teams = Array.from({length: numTeams}, () => []);
+        teams = Array.from({ length: numTeams }, () => []);
         if (balanceGirls) {
           const filles = participants.filter(p => p.gender === 'fille');
           const garcons = participants.filter(p => p.gender !== 'fille');
 
-          shuffle(filles).forEach((f,i) => teams[i % numTeams].push(f.name));
-          shuffle(garcons).forEach((g,i) => teams[i % numTeams].push(g.name));
+          shuffle(filles).forEach((f, i) => teams[i % numTeams].push(f.name));
+          shuffle(garcons).forEach((g, i) => teams[i % numTeams].push(g.name));
         } else {
-          shuffle(participants).forEach((p,i) => teams[i % numTeams].push(p.name));
+          shuffle(participants).forEach((p, i) => teams[i % numTeams].push(p.name));
         }
 
         attempt++;
@@ -266,7 +266,7 @@
 
     function displayTeams(teams) {
       const div = document.getElementById('teamsOutput');
-      div.innerHTML = teams.map((team,i) => `<strong>Équipe ${i+1}:</strong> ${team.join(', ')}`).join('<br>');
+      div.innerHTML = teams.map((team, i) => `<strong>Équipe ${i + 1}:</strong> ${team.join(', ')}`).join('<br>');
     }
 
     function askReset() {
