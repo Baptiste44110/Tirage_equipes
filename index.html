@@ -43,14 +43,13 @@
 
   <button id="resetBtn" onclick="showResetPopup()">Réinitialiser tout</button>
 
-  <!-- Pop-up modal container -->
-  <div id="popupContainer" style="display:none; position: fixed; top:0; left:0; width:100vw; height:100vh; 
-      background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;">
-    <div id="popupContent" style="background:#fff; padding:20px; border-radius:8px; max-width:400px; width:90%; box-shadow:0 0 15px rgba(0,0,0,0.3);">
-      <p id="popupMessage" style="margin-bottom: 20px;"></p>
-      <div style="text-align:right;">
-        <button id="popupCancelBtn" style="margin-right: 10px;">Annuler</button>
-        <button id="popupConfirmBtn">Confirmer</button>
+  <!-- POPUP -->
+  <div id="popupContainer">
+    <div id="popup">
+      <div id="popupMessage"></div>
+      <div id="popupButtons">
+        <button id="popupConfirmBtn">OK</button>
+        <button id="popupCancelBtn">Annuler</button>
       </div>
     </div>
   </div>
@@ -59,7 +58,11 @@
     const participants = [];
     const incompatibilities = [];
 
-    // ---- Toggle gender input visibility ----
+    const popupContainer = document.getElementById('popupContainer');
+    const popupMessage = document.getElementById('popupMessage');
+    const popupConfirmBtn = document.getElementById('popupConfirmBtn');
+    const popupCancelBtn = document.getElementById('popupCancelBtn');
+
     function toggleGender() {
       const genderInput = document.getElementById('genderInput');
       const balanceGirlsLabel = document.getElementById('balanceGirlsLabel');
@@ -73,7 +76,6 @@
       }
     }
 
-    // ---- Update selectors for incompatibilities ----
     function updateParticipantSelectors() {
       const sel1 = document.getElementById('incompat1');
       const sel2 = document.getElementById('incompat2');
@@ -87,7 +89,6 @@
       });
     }
 
-    // ---- Update participant list display ----
     function updateParticipantsList() {
       const ul = document.getElementById('participantsList');
       ul.innerHTML = '';
@@ -104,7 +105,6 @@
       });
     }
 
-    // ---- Update incompatibilities list ----
     function updateIncompatList() {
       const ul = document.getElementById('incompatList');
       ul.innerHTML = '';
@@ -121,12 +121,12 @@
       });
     }
 
-    // ---- Add participant ----
     function addParticipant() {
       const input = document.getElementById('participantInput');
       const name = input.value.trim();
       if (!name || participants.some(p => p.name === name)) {
         input.value = '';
+        showAlertPopup("Le nom est vide ou déjà utilisé.");
         return;
       }
       const enableGender = document.getElementById('enableGender').checked;
@@ -137,7 +137,6 @@
       input.value = '';
     }
 
-    // ---- Remove participant and related incompatibilities ----
     function removeParticipant(name) {
       const idx = participants.findIndex(p => p.name === name);
       if (idx !== -1) {
@@ -153,7 +152,6 @@
       }
     }
 
-    // ---- Add incompatibility ----
     function addIncompatibility() {
       const p1 = document.getElementById('incompat1').value;
       const p2 = document.getElementById('incompat2').value;
@@ -163,16 +161,16 @@
           incompatibilities.push([p1, p2]);
           updateIncompatList();
         }
+      } else {
+        showAlertPopup("Veuillez choisir deux participants différents pour créer une incompatibilité.");
       }
     }
 
-    // ---- Remove incompatibility ----
     function removeIncompatibility(index) {
       incompatibilities.splice(index, 1);
       updateIncompatList();
     }
 
-    // ---- Generate teams with validation and pop-ups ----
     function generateTeams() {
       const numTeams = parseInt(document.getElementById('numTeams').value);
       const balanceGirls = document.getElementById('balanceGirls').checked;
@@ -221,63 +219,48 @@
       displayTeams(teams);
     }
 
-    // ---- Check team validity regarding incompatibilities ----
     function checkTeamsValid(teams) {
-      return incompatibilities.every(([a, b]) => {
-        return !teams.some(team => team.includes(a) && team.includes(b));
-      });
+      for (const [a, b] of incompatibilities) {
+        for (const team of teams) {
+          if (team.includes(a) && team.includes(b)) return false;
+        }
+      }
+      return true;
     }
 
-    // ---- Display teams ----
     function displayTeams(teams) {
-      const resDiv = document.getElementById('result');
-      resDiv.innerHTML = '';
-      teams.forEach((team, idx) => {
+      const container = document.getElementById('result');
+      container.innerHTML = '';
+      teams.forEach((team, i) => {
         const div = document.createElement('div');
         div.className = 'team';
-        div.innerHTML = `<strong>Équipe ${idx + 1}</strong><br>${team.join(', ')}`;
-        resDiv.appendChild(div);
+        div.textContent = `Équipe ${i + 1} : ${team.join(', ')}`;
+        container.appendChild(div);
       });
     }
-
-    // ---- Reset all data ----
-    function resetAll() {
-      participants.length = 0;
-      incompatibilities.length = 0;
-      updateParticipantsList();
-      updateParticipantSelectors();
-      updateIncompatList();
-
-      document.getElementById('participantInput').value = '';
-      document.getElementById('enableGender').checked = false;
-      toggleGender();
-      document.getElementById('numTeams').value = 2;
-      document.getElementById('balanceGirls').checked = false;
-      document.getElementById('result').innerHTML = '';
-    }
-
-    // ---- Popup control ----
-    const popupContainer = document.getElementById('popupContainer');
-    const popupMessage = document.getElementById('popupMessage');
-    const popupConfirmBtn = document.getElementById('popupConfirmBtn');
-    const popupCancelBtn = document.getElementById('popupCancelBtn');
 
     function showResetPopup() {
       popupMessage.textContent = "Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.";
       popupConfirmBtn.textContent = "Oui";
+      popupCancelBtn.style.display = 'inline-block';
       popupCancelBtn.textContent = "Annuler";
+
       popupConfirmBtn.onclick = () => {
         resetAll();
         closePopup();
       };
       popupCancelBtn.onclick = closePopup;
+
       popupContainer.style.display = 'flex';
     }
 
     function showAlertPopup(message) {
       popupMessage.textContent = message;
       popupConfirmBtn.textContent = "OK";
+
       popupCancelBtn.style.display = 'none';
+      popupCancelBtn.onclick = null;
+
       popupConfirmBtn.onclick = closePopup;
       popupContainer.style.display = 'flex';
     }
@@ -285,6 +268,20 @@
     function closePopup() {
       popupContainer.style.display = 'none';
       popupCancelBtn.style.display = 'inline-block';
+    }
+
+    function resetAll() {
+      participants.length = 0;
+      incompatibilities.length = 0;
+      updateParticipantsList();
+      updateParticipantSelectors();
+      updateIncompatList();
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('participantInput').value = '';
+      document.getElementById('numTeams').value = '2';
+      document.getElementById('enableGender').checked = false;
+      toggleGender();
+      document.getElementById('balanceGirls').checked = false;
     }
   </script>
 </body>
