@@ -46,6 +46,7 @@
   <!-- POPUP -->
   <div id="popupContainer">
     <div id="popup">
+      <div id="popupIcon"></div>
       <div id="popupMessage"></div>
       <div id="popupButtons">
         <button id="popupConfirmBtn">OK</button>
@@ -60,13 +61,22 @@
 
     // Popup elements
     const popupContainer = document.getElementById('popupContainer');
+    const popup = document.getElementById('popup');
     const popupMessage = document.getElementById('popupMessage');
+    const popupIcon = document.getElementById('popupIcon');
     const popupConfirmBtn = document.getElementById('popupConfirmBtn');
     const popupCancelBtn = document.getElementById('popupCancelBtn');
 
-    // Affiche une popup avec message, et callbacks confirm/cancel
-    function showPopup(message, onConfirm, onCancel, onlyConfirm = false) {
+    // Affiche une popup avec message, callbacks confirm/cancel et type (confirm ou error)
+    function showPopup(message, onConfirm, onCancel, type = 'confirm', onlyConfirm = false) {
       popupMessage.textContent = message;
+
+      // Style et icône selon type
+      popup.classList.remove('confirm', 'error');
+      popup.classList.add(type);
+
+      popupIcon.textContent = type === 'confirm' ? '✔️' : '❌';
+
       popupContainer.style.display = 'flex';
       popupConfirmBtn.style.display = 'inline-block';
       popupCancelBtn.style.display = onlyConfirm ? 'none' : 'inline-block';
@@ -91,21 +101,21 @@
       popupCancelBtn.addEventListener('click', cancelHandler);
     }
 
-    // Popup spécifique pour alertes (un seul bouton OK)
     function showAlertPopup(message) {
-      showPopup(message, null, null, true);
+      showPopup(message, null, null, 'error', true);
     }
 
-    // Popup spécifique pour confirmer reset
     function showResetPopup() {
       showPopup(
         "Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.",
         () => { resetAll(); },
-        () => { /* rien à faire */ }
+        () => { /* rien */ },
+        'confirm'
       );
     }
 
-    // Le reste de tes fonctions inchangées mais avec alert() remplacés par showAlertPopup()
+    // Le reste des fonctions (toggleGender, addParticipant, removeParticipant, addIncompatibility, removeIncompatibility,
+    // generateTeams, checkTeamsValid, displayTeams, resetAll) inchangées à partir de ton code initial
 
     function toggleGender() {
       const genderInput = document.getElementById('genderInput');
@@ -216,8 +226,12 @@
       const numTeams = parseInt(document.getElementById('numTeams').value);
       const balanceGirls = document.getElementById('balanceGirls').checked;
 
-      if (numTeams < 2 || participants.length < numTeams) {
-        showAlertPopup("Pas assez de participants pour ce nombre d'équipes.");
+      if (numTeams < 2) {
+        showPopup("Veuillez saisir un nombre d'équipes valide (>=2).", null, null, 'error', true);
+        return;
+      }
+      if (participants.length < numTeams) {
+        showPopup("Il y a moins de participants que d'équipes.", null, null, 'error', true);
         return;
       }
 
@@ -251,7 +265,7 @@
 
         attempt++;
         if (attempt > 1000) {
-          showAlertPopup("Impossible de former des équipes valides après 1000 essais.");
+          showPopup("Impossible de former des équipes valides après 1000 essais.", null, null, 'error', true);
           return;
         }
 
