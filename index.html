@@ -2,9 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Tirage d'équipes équitables</title>
+  <title>Tirage d'équipes</title>
   <style>
-    /* Reset de base */
     * {
       box-sizing: border-box;
     }
@@ -108,18 +107,14 @@
     li {
       font-size: 1rem;
       margin-bottom: 8px;
-      position: relative;
-      padding-right: 25px;
     }
     .remove {
-      position: absolute;
-      right: 0;
-      top: 0;
       color: #e74c3c;
       cursor: pointer;
       font-weight: bold;
       font-size: 1.1rem;
       user-select: none;
+      margin-left: 8px;
       transition: color 0.3s;
     }
     .remove:hover {
@@ -138,7 +133,6 @@
     #result {
       margin-top: 20px;
     }
-    /* Incompatibilité container ligne compacte */
     #incompatibilityContainer {
       display: flex;
       align-items: center;
@@ -158,7 +152,6 @@
       font-size: 0.95rem;
       margin-bottom: 0;
     }
-    /* Responsive pour petits écrans */
     @media (max-width: 480px) {
       input[type="text"],
       input[type="number"],
@@ -354,12 +347,10 @@
           const shuffledGirls = filles.slice().sort(() => Math.random() - 0.5);
           const shuffledBoys = garcons.slice().sort(() => Math.random() - 0.5);
 
-          // Répartir les filles équitablement
           shuffledGirls.forEach((f, i) => {
             teams[i % numTeams].push(f.name);
           });
 
-          // Répartir les autres
           shuffledBoys.forEach((p, i) => {
             teams[i % numTeams].push(p.name);
           });
